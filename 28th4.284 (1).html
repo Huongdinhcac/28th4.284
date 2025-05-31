@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nhật Ký Blog Cá Nhân</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffe6f0;
+            margin: 0;
+            padding: 0 20px 80px;
+            color: #333;
+        }
+
+        header {
+            background-color: #ffb6c1;
+            padding: 30px 0;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 8px rgba(255,182,193,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            letter-spacing: 2px;
+        }
+
+        .sticker {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.4;
+            user-select: none;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .sticker.heart { color: #ff3366; top: 10px; left: 20px; animation-delay: 0s; }
+        .sticker.star { color: #ff6699; top: 40px; right: 30px; animation-delay: 2s; }
+        .sticker.flower { color: #ff99cc; bottom: 10px; left: 50%; transform: translateX(-50%); animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(-10px); opacity: 0.7; }
+        }
+
+        main {
+            max-width: 700px;
+            margin: 30px auto 0;
+            background: white;
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 8px 15px rgba(255,182,193,0.3);
+        }
+
+        form {
+            margin-bottom: 40px;
+        }
+
+        form input[type="text"],
+        form textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-top: 10px;
+            border: 2px solid #ffb6c1;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        form button {
+            background-color: #ff4d88;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin-top: 15px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #e60057;
+        }
+
+        article.post {
+            border-bottom: 1px solid #ffb6c1;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        article.post:last-child {
+            border: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        article.post h2 {
+            color: #ff3366;
+            margin-bottom: 5px;
+        }
+
+        article.post time {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        article.post p {
+            white-space: pre-line;
+            line-height: 1.5;
+        }
+
+        .calendar-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffd1dc;
+            color: #800040;
+            text-align: center;
+            padding: 15px 10px;
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: 0 -2px 10px rgba(255,182,193,0.4);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Nhật Ký Blog Cá Nhân</h1>
+    <div class="sticker heart">❤️</div>
+    <div class="sticker star">⭐</div>
+    <div class="sticker flower">🌸</div>
+</header>
+
+<main>
+    <form id="blogForm">
+        <label for="title">Tiêu đề bài viết:</label>
+        <input type="text" id="title" name="title" placeholder="Nhập tiêu đề..." required />
+
+        <label for="content">Nội dung bài viết:</label>
+        <textarea id="content" name="content" rows="6" placeholder="Viết nhật ký..." required></textarea>
+
+        <button type="submit">Đăng bài</button>
+    </form>
+
+    <section id="posts">
+        <!-- Bài viết sẽ được thêm vào đây -->
+    </section>
+</main>
+
+<div class="calendar-footer" id="calendarFooter">
+    <!-- Ngày hôm nay và số lượt truy cập sẽ được hiển thị ở đây -->
+</div>
+
+<script>
+    const form = document.getElementById('blogForm');
+    const postsSection = document.getElementById('posts');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+
+        const title = form.title.value.trim();
+        const content = form.content.value.trim();
+        if (!title || !content) return;
+
+        const postDate = new Date();
+        const formattedDate = postDate.toLocaleDateString('vi-VN', {
+            day: '2-digit', month: '2-digit', year: 'numeric'
+        });
+
+        const postElement = document.createElement('article');
+        postElement.classList.add('post');
+
+        postElement.innerHTML = `
+            <h2>${title}</h2>
+            <time>${formattedDate}</time>
+            <p>${content.replace(/\n/g, '<br>')}</p>
+        `;
+
+        postsSection.prepend(postElement);
+        form.reset();
+    });
+
+    const calendarFooter = document.getElementById("calendarFooter");
+    const today = new Date();
+    const formatted = today.toLocaleDateString("vi-VN", { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    let count = localStorage.getItem("visitorCount");
+    if (!count) {
+        count = 1;
+    } else {
+        count = parseInt(count) + 1;
+    }
+    localStorage.setItem("visitorCount", count);
+
+    calendarFooter.innerText = `📅 Hôm nay là ${formatted} | 👣 Bước chân ghé qua: ${count}`;
+</script>
+
+</body>
+</html>
